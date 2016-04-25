@@ -125,7 +125,7 @@ export class Toast extends ViewController {
 @Component({
   selector: 'ion-toast',
   template: `
-    <div (click)="bdClick()" tappable disable-activated class="backdrop" role="presentation"></div>
+    <div *ngIf="!hideBackDrop" (click)="bdClick()" tappable disable-activated class="backdrop" role="presentation"></div>
     <div class="toast-wrapper">
       <div class="toast-container">
         <div class="toast-message" id="{{hdrId}}" *ngIf="d.message">{{d.message}}</div>
@@ -144,11 +144,12 @@ export class Toast extends ViewController {
   directives: [NgIf, Icon, Button]
 })
 class ToastCmp {
-  private d: any;
+  private d: ToastOptions;
   private descId: string;
   private hdrId: string;
   private created: number;
   private id: number;
+  private hideBackDrop: boolean = false;
   private dismissTimeout: number = undefined;
 
   constructor(
@@ -170,6 +171,9 @@ class ToastCmp {
     this.id = (++toastIds);
     if (this.d.message) {
       this.hdrId = 'toast-hdr-' + this.id;
+    }
+    if (this.d.hideBackDrop) {
+      this.hideBackDrop = this.d.hideBackDrop;
     }
   }
 
@@ -223,6 +227,7 @@ export interface ToastOptions {
   message?: string;
   cssClass?: string;
   duration?: number;
+  hideBackDrop?: boolean;
   showCloseButton?: boolean;
   closeButtonText?: string;
   enableBackdropDismiss?: boolean;
