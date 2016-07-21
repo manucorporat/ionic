@@ -28,6 +28,8 @@ $button-round-border-radius:      64px !default;
   transition: background-color, opacity 100ms linear;
 
   font-kerning: none;
+
+  contain: strict;
 }
 
 .button-inner {
@@ -40,6 +42,8 @@ $button-round-border-radius:      64px !default;
 
   width: 100%;
   height: 100%;
+
+  contain: layout;
 }
 
 a.button,

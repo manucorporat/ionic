@@ -290,14 +290,19 @@ ion-button-effect {
   z-index: 0;
   display: block;
 
+  left: 0;
+  top: 0;
+
   border-radius: 50%;
 
   background-color: $ripple-background-color;
   opacity: .2;
 
   transition-timing-function: ease-in-out;
-
+  transform-origin: center center;
   pointer-events: none;
+
+  contain: strict;
 }
 
 
