@@ -16,6 +16,8 @@ ion-menu {
 
   display: none;
 
+  contain: strict;
+
   &.show-menu {
     display: block;
   }
@@ -36,6 +38,8 @@ ion-menu {
   width: $menu-width;
 
   transform: translate3d(-9999px, 0, 0);
+
+  contain: strict;
 }
 
 .menu-inner > ion-header,

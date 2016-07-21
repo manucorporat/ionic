@@ -32,6 +32,7 @@ ion-action-sheet {
   max-width: $action-sheet-max-width;
 
   transform: translate3d(0, 100%, 0);
+  contain: contain;
 }
 
 .action-sheet-button {

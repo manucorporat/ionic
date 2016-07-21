@@ -171,6 +171,8 @@ $alert-ios-checkbox-icon-transform:             rotate(45deg) !default;
   max-height: $alert-ios-content-max-height;
 
   border-top: $alert-ios-list-border-top;
+
+  contain: content;
 }
 
 .alert-tappable {

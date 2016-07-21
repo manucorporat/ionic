@@ -25,6 +25,7 @@
   text-align: initial;
   text-decoration: none;
   color: inherit;
+  contain: content;
 }
 
 .item-inner {
@@ -54,6 +55,8 @@
   align-self: stretch;
 
   text-overflow: ellipsis;
+
+  contain: content;
 }
 
 .item[no-lines],

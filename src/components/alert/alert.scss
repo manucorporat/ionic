@@ -38,6 +38,7 @@ ion-alert {
   max-height: $alert-max-height;
 
   opacity: 0;
+  contain: content;
 }
 
 .alert-title {
@@ -69,6 +70,8 @@ ion-alert {
   display: flex;
 
   flex-direction: row;
+
+  contain: content;
 
   &.vertical {
     flex-direction: column;

@@ -13,6 +13,10 @@
   flex-direction: column;
 }
 
+.range-knob-handle {
+  contain: strict;
+}
+
 .item-range ion-range {
   width: 100%;
 
@@ -26,6 +30,8 @@ ion-range {
   display: flex;
 
   align-items: center;
+
+  contain: content;
 
   ion-label {
     flex: initial;

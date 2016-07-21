@@ -33,12 +33,21 @@ $segment-button-ios-toolbar-icon-size:          2.2rem !default;
 $segment-button-ios-toolbar-icon-line-height:   2.4rem !default;
 
 
+ion-segment {
+  display: flex;
+
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+
+  height: $segment-button-ios-height;
+  contain: strict;
+}
+
 .segment-button {
   flex: 1;
 
   width: 0;
-
-  height: $segment-button-ios-height;
 
   border-width: $segment-button-ios-border-width;
   border-style: solid;
@@ -99,16 +108,17 @@ $segment-button-ios-toolbar-icon-line-height:   2.4rem !default;
 .toolbar {
 
   ion-segment {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
+    // position: absolute;
+    // top: 0;
+    // right: 0;
+    // bottom: 0;
+    // left: 0;
+
+    height: $segment-button-ios-toolbar-button-height;
   }
 
   .segment-button {
     max-width: $segment-button-ios-toolbar-button-max-width;
-    height: $segment-button-ios-toolbar-button-height;
 
     font-size: $segment-button-ios-toolbar-font-size;
     line-height: $segment-button-ios-toolbar-line-height;

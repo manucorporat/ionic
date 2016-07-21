@@ -9,6 +9,8 @@ ion-spinner {
 
   width: 28px;
   height: 28px;
+
+  contain: strict;
 }
 
 ion-spinner svg {

@@ -54,6 +54,7 @@ ion-toggle {
   transition: background-color $toggle-ios-transition-duration;
 
   pointer-events: none;
+  contain: strict;
 }
 
 

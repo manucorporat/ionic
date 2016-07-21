@@ -51,6 +51,7 @@ ion-toggle {
   transition: background-color $toggle-md-transition-duration;
 
   pointer-events: none;
+  contain: strict;
 }
 
 

@@ -23,6 +23,8 @@
 
   vertical-align: top; // the better option for most scenarios
   vertical-align: -webkit-baseline-middle; // the best for those that support it
+
+  contain: content;
 }
 
 .bar-button::after {
