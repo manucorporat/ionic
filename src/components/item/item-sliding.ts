@@ -24,7 +24,7 @@ export const enum ItemSideFlags {
  * @usage
  *
  * ```html
- * <ion-item-sliding>
+ * <ion-item-sliding #item>
  *   <ion-item>
  *     Item 1
  *   </ion-item>

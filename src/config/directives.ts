@@ -8,6 +8,7 @@ import { Backdrop } from '../components/backdrop/backdrop';
 import { Badge } from '../components/badge/badge';
 import { Button } from '../components/button/button';
 import { Content } from '../components/content/content';
+import { Fab, FabButton, FabList } from '../components/fab/fab';
 import { Img } from '../components/img/img';
 import { Scroll } from '../components/scroll/scroll';
 import { InfiniteScroll } from '../components/infinite-scroll/infinite-scroll';
@@ -135,6 +136,9 @@ export const IONIC_DIRECTIVES: any[] = [
   Button,
   Chip,
   Content,
+  Fab,
+  FabButton,
+  FabList,
   Scroll,
   InfiniteScroll,
   InfiniteScrollContent,

@@ -10,6 +10,7 @@ export { Checkbox } from './components/checkbox/checkbox';
 export { Chip } from './components/chip/chip';
 export { Content } from './components/content/content';
 export { DateTime } from './components/datetime/datetime';
+export { Fab } from './components/fab/fab';
 export { Icon } from './components/icon/icon';
 export { Img } from './components/img/img';
 export { InfiniteScroll } from './components/infinite-scroll/infinite-scroll';

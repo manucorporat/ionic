@@ -1,0 +1,100 @@
+@import "../../globals.core";
+
+// Floating Action Buttons
+// --------------------------------------------------
+
+/// @prop - Width and height of the FAB button
+$button-fab-size:           56px !default;
+
+
+[ion-fab] {
+  position: relative;
+  overflow: hidden;
+
+  width: $button-fab-size;
+  min-width: 0;
+  height: $button-fab-size;
+  z-index: 100;
+
+  font-size: 14px;
+  line-height: $button-fab-size;
+  vertical-align: middle;
+
+  background-clip: padding-box;
+
+  ion-icon {
+    flex: 1;
+
+    font-size: 2.4rem;
+  }
+}
+
+ion-fab {
+
+  position: absolute;
+  z-index: 100;
+
+
+  &[center] {
+    left: 50%;
+
+    margin-left: -$button-fab-size / 2;
+  }
+
+  &[top] {
+    top: 10px;
+  }
+
+  &[right] {
+    right: 10px;
+  }
+
+  &[bottom] {
+    bottom: 10px;
+  }
+
+  &[left] {
+    left: 10px;
+  }
+
+  &[top][edge] {
+    top: -$button-fab-size / 2;
+  }
+
+  &[bottom][edge] {
+    bottom: -$button-fab-size / 2;
+  }
+}
+
+ion-fab-list {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px 0px;
+
+  [ion-fab] {
+    width: 40px;
+    height: 40px;
+    color: #797979;
+    background: white;
+
+    margin-top: 8px;
+    margin-bottom: 8px;
+    transform: scale(0);
+    visibility: hidden;
+    opacity: 0;
+
+    transition: all 200ms ease;
+    transition-property: transform, opacity;
+
+    &.ion-fab-visible {
+      visibility: visible;
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+}
+
+.ion-fab-list-visible {
+  display: flex;
+}

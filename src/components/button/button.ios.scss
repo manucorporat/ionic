@@ -128,13 +128,6 @@ $button-ios-round-padding:                          $button-round-padding !defau
 $button-ios-round-border-radius:                    $button-round-border-radius !default;
 
 
-// iOS FAB Button
-// --------------------------------------------------
-
-/// @prop - Border radius of the FAB button
-$button-ios-fab-border-radius:                      50% !default;
-
-
 // iOS Default Button
 // --------------------------------------------------
 
@@ -314,12 +307,6 @@ $button-ios-fab-border-radius:                      50% !default;
 }
 
 
-// iOS FAB Button
-// --------------------------------------------------
-
-.button-fab {
-  border-radius: $button-ios-fab-border-radius;
-}
 
 // iOS does not use the button effect
 ion-button-effect {
@@ -340,5 +327,4 @@ ion-button-effect {
 // Core Button Overrides
 // --------------------------------------------------
 
-@import "./button-fab";
 @import "./button-icon";

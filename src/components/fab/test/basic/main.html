@@ -1,0 +1,23 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Floating Action Buttons</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen>
+  <f *ngFor="let f of array"></f>
+
+  <ion-fab top right edge>
+    <button ion-fab (click)="clickMainFAB()"><ion-icon name="md-share"></ion-icon></button>
+    <ion-fab-list>
+      <button ion-fab (click)="openSocial('facebook')"><ion-icon name="logo-facebook"></ion-icon></button>
+      <button ion-fab (click)="openSocial('twitter')"><ion-icon name="logo-twitter"></ion-icon></button>
+      <button ion-fab (click)="openSocial('vimeo')"><ion-icon name="logo-vimeo"></ion-icon></button>
+      <button ion-fab (click)="openSocial('googleplus')"><ion-icon name="logo-googleplus"></ion-icon></button>
+    </ion-fab-list>
+  </ion-fab>
+
+  <ion-fab bottom center>
+    <button ion-fab (click)="add()"><ion-icon name="add"></ion-icon></button>
+  </ion-fab>
+</ion-content>
