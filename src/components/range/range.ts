@@ -566,7 +566,8 @@ export class Range extends Ion implements AfterViewInit, ControlValueAccessor, O
 
   /** @internal */
   _valueToRatio(value: number) {
-    value = (value - this._min) / (this._max - this._min);
+    value = Math.round((value - this._min) / this._step) * this._step;
+    value = value / (this._max - this._min);
     return clamp(0, value, 1);
   }
 
