@@ -187,5 +187,5 @@ export interface ModalOptions {
 export interface ModalEvent extends Event {
   detail: {
     modal: Modal;
-  }
+  };
 }

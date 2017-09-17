@@ -1,4 +1,4 @@
-import { Component, Element, CssClassMap, Method, Prop, State } from '@stencil/core';
+import { Component, CssClassMap, Element, Method, Prop, State } from '@stencil/core';
 import { createThemedClasses, getElementClassObject } from '../../utils/theme';
 
 
@@ -175,7 +175,7 @@ export class FabButton {
 
     return (
       <TagType class={fabClasses} onClick={this.clickedFab.bind(this)} disabled={this.disabled}>
-        <ion-icon name="close" class="fab-close-icon"></ion-icon>
+        <ion-icon name='close' class='fab-close-icon'></ion-icon>
         <span class='button-inner'>
           <slot></slot>
         </span>

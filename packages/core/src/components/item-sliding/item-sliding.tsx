@@ -374,13 +374,13 @@ export class ItemSliding {
     this.optsWidthRightSide = 0;
     if (this.rightOptions) {
       this.optsWidthRightSide = this.rightOptions.width();
-      this.optsWidthRightSide == 0 && console.warn('optsWidthRightSide should not be zero');
+      this.optsWidthRightSide === 0 && console.warn('optsWidthRightSide should not be zero');
     }
 
     this.optsWidthLeftSide = 0;
     if (this.leftOptions) {
       this.optsWidthLeftSide = this.leftOptions.width();
-      this.optsWidthLeftSide == 0 && console.warn('optsWidthLeftSide should not be zero');
+      this.optsWidthLeftSide === 0 && console.warn('optsWidthLeftSide should not be zero');
     }
     this.optsDirty = false;
   }
@@ -480,7 +480,7 @@ export class ItemSliding {
         'active-swipe-right': !!(this.state & SlidingState.SwipeRight),
         'active-swipe-left': !!(this.state & SlidingState.SwipeLeft)
       }
-    }
+    };
   }
 
   render() {

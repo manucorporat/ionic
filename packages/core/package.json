@@ -12,7 +12,8 @@
   "devDependencies": {
     "@stencil/core": "0.0.5-23",
     "@stencil/dev-server": "latest",
-    "@stencil/utils": "latest"
+    "@stencil/utils": "latest",
+    "tslint-ionic-rules": "0.0.11"
   },
   "scripts": {
     "build": "stencil build",
