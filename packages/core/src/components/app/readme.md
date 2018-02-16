@@ -33,7 +33,13 @@ Returns whether the application is enabled or not
 Boolean if the app is actively scrolling or not.
 
 
+#### setEnabled()
+
+
 #### setScrolling()
+
+
+#### unregisterRootNav()
 
 
 

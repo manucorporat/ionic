@@ -1,5 +1,5 @@
 import { Component, Element, Event, EventEmitter, Method, Prop, State, Watch } from '@stencil/core';
-import { ensureExternalRounterController, getNavAsChildIfExists } from '../../utils/helpers';
+// import { ensureExternalRounterController, getNavAsChildIfExists } from '../../utils/helpers';
 import { FrameworkDelegate } from '../..';
 
 @Component({
@@ -109,29 +109,29 @@ export class Tab {
   }
 
   private configChildgNav(): Promise<any|void> {
-    const nav = getNavAsChildIfExists(this.el);
-    if (nav) {
-      // the tab's nav has been initialized externally
-      return ensureExternalRounterController().then<void|any>((externalRouterController) => {
-        const externalNavPromise = externalRouterController.getExternalNavPromise();
-        if (externalNavPromise) {
-          return externalNavPromise.then(() => {
-            externalRouterController.clearExternalNavPromise();
-          });
-        }
+    // const nav = getNavAsChildIfExists(this.el);
+    // if (nav) {
+    //   // the tab's nav has been initialized externally
+    //   return ensureExternalRounterController().then<void|any>((externalRouterController) => {
+    //     const externalNavPromise = externalRouterController.getExternalNavPromise();
+    //     if (externalNavPromise) {
+    //       return externalNavPromise.then(() => {
+    //         externalRouterController.clearExternalNavPromise();
+    //       });
+    //     }
 
-        // the tab's nav has not been initialized externally, so
-        // check if we need to initiailize it
-        return nav.componentOnReady()
-        .then(() => nav.onAllTransitionsComplete())
-        .then<any>(() => {
-          if (nav.getViews().length === 0 && !nav.isTransitioning() && !nav.initialized) {
-            return nav.setRoot(nav.root);
-          }
-          return Promise.resolve();
-        });
-      });
-    }
+    //     // the tab's nav has not been initialized externally, so
+    //     // check if we need to initiailize it
+    //     return nav.componentOnReady()
+    //     .then(() => nav.onAllTransitionsComplete())
+    //     .then<any>(() => {
+    //       if (nav.getViews().length === 0 && !nav.isTransitioning() && !nav.initialized) {
+    //         return nav.setRoot(nav.root);
+    //       }
+    //       return Promise.resolve();
+    //     });
+    //   });
+    // }
     return Promise.resolve();
   }
 

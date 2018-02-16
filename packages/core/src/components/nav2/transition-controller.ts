@@ -1,5 +1,5 @@
 import { isPresent } from './nav-util';
-import { AnimationOptions, Config, ViewController, Animation } from '../..';
+import { Animation, ViewController, AnimationOptions } from '../..';
 import { Transition } from './transition';
 import { NavControllerBase } from './nav';
 
@@ -25,9 +25,7 @@ export class TransitionController {
     return this._ids++;
   }
 
-  get(trnsId: number, ani: Animation, enteringView: ViewController, leavingView: ViewController): Transition {
-
-    const trns = new Transition(ani, enteringView, leavingView);
+  register(trnsId: number, trns: Transition) {
     trns.trnsId = trnsId;
 
     if (!this._trns[trnsId]) {
@@ -37,10 +35,8 @@ export class TransitionController {
     } else {
       // we already have a root transition created
       // add this new transition as a child to the root
-      this._trns[trnsId].ani.add(trns.ani);
+      this._trns[trnsId].parent = trns;
     }
-
-    return trns;
   }
 
   destroy(trnsId: number) {

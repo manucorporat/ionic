@@ -1,5 +1,5 @@
 import { ViewController } from './view-controller';
-import { AnimationOptions, Animation } from '../..';
+import { Animation, AnimationBuilder } from '../..';
 
 /**
  * @hidden
@@ -19,17 +19,25 @@ import { AnimationOptions, Animation } from '../..';
 export class Transition {
   _trnsStart: Function;
 
-  parent: Transition;
   trnsId: number;
+  ani: Animation;
+  parent: Transition;
 
   constructor(
-    public ani: Animation,
+    private animationCtrl: HTMLIonAnimationControllerElement,
+    private builder: AnimationBuilder,
     public enteringView: ViewController,
     public leavingView: ViewController,
-    ) {}
-
+    private opts: any
+  ) {}
   registerStart(trnsStart: Function) {
     this._trnsStart = trnsStart;
+  }
+
+  init() {
+    return this.animationCtrl.create(this.builder, null, this.opts).then((ani) => {
+      this.ani = ani;
+    });
   }
 
   start() {
@@ -42,7 +50,7 @@ export class Transition {
 
   destroy() {
     this.ani.destroy();
-    this.ani = this.parent = this._trnsStart = null;
+    this.ani = this._trnsStart = null;
   }
 
 }

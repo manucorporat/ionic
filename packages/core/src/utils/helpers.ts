@@ -43,8 +43,9 @@ export function isCheckedProperty(a: any, b: any): boolean {
   return (a == b); // tslint:disable-line
 }
 
-export function assert(bool: boolean, msg: string) {
-  if (!bool) {
+export function assert(condition: any, msg: string) {
+  if (!condition) {
+    debugger;
     console.error(msg);
   }
 }
@@ -321,7 +322,7 @@ export function normalizeUrl(url: string) {
   return url;
 }
 
-export function ensureExternalRounterController(): Promise<HTMLIonExternalRouterControllerElement> {
+export function ensureExternalRounterController(): Promise<any> {
   const element = document.querySelector('ion-external-router-controller');
   if (element) {
     return (element as any).componentOnReady();

@@ -1,11 +1,14 @@
 import { Component, Element, Event, EventEmitter, Listen, Method, Prop, State } from '@stencil/core';
-import { Config, NavEvent, OverlayController, PublicNav, PublicViewController } from '../../index';
+import { Config, OverlayController } from '../../index';
 
 import { getOrAppendElement } from '../../utils/helpers';
 import { isCordova } from '../../global/platform-utils';
 
 const rootNavs = new Map<number, HTMLIonNavElement>();
 const ACTIVE_SCROLLING_TIME = 100;
+
+export type PublicNav = any;
+export type PublicViewController = any;
 
 @Component({
   tag: 'ion-app',
@@ -36,10 +39,10 @@ export class App {
     this.hoverCSS = this.config.getBoolean('hoverCSS', false);
   }
 
-  @Listen('body:navInit')
-  protected registerRootNav(event: NavEvent) {
-    rootNavs.set(event.target.getId(), event.target);
-  }
+  // @Listen('body:navInit')
+  // protected registerRootNav(event: NavEvent) {
+  //   rootNavs.set(event.target.getId(), event.target);
+  // }
 
   /**
    * Returns an array of top level Navs
@@ -116,39 +119,39 @@ export class App {
     return null;
   }
 
-  @Listen('document:backbutton')
-  hardwareBackButtonPressed() {
-    // check if menu exists and is open
-    return checkIfMenuIsOpen().then((done: boolean) => {
-      if (!done) {
-        // we need to check if there is an action-sheet, alert, loading, picker, popover or toast open
-        // if so, just return and don't do anything
-        // Why? I have no idea, but that is the existing behavior in Ionic 3
-        return checkIfNotModalOverlayIsOpen();
-      }
-      return done;
-    }).then((done: boolean) => {
-      if (!done) {
-        // if there's a modal open, close that instead
-        return closeModalIfOpen();
-      }
-      return done;
-    }).then((done: boolean) => {
-      // okay cool, it's time to pop a nav if possible
-      if (!done) {
-        return popEligibleView();
-      }
-      return done;
-    }).then((done: boolean) => {
-      if (!done) {
-        // okay, we didn't find a nav that we can pop, so we should just exit the app
-        // since each platform exits differently, just delegate it to the platform to
-        // figure out how to exit
-        return this.exitApp.emit();
-      }
-      return Promise.resolve();
-    });
-  }
+  // @Listen('document:backbutton')
+  // hardwareBackButtonPressed() {
+  //   // check if menu exists and is open
+  //   return checkIfMenuIsOpen().then((done: boolean) => {
+  //     if (!done) {
+  //       // we need to check if there is an action-sheet, alert, loading, picker, popover or toast open
+  //       // if so, just return and don't do anything
+  //       // Why? I have no idea, but that is the existing behavior in Ionic 3
+  //       return checkIfNotModalOverlayIsOpen();
+  //     }
+  //     return done;
+  //   }).then((done: boolean) => {
+  //     if (!done) {
+  //       // if there's a modal open, close that instead
+  //       return closeModalIfOpen();
+  //     }
+  //     return done;
+  //   }).then((done: boolean) => {
+  //     // okay cool, it's time to pop a nav if possible
+  //     if (!done) {
+  //       return popEligibleView();
+  //     }
+  //     return done;
+  //   }).then((done: boolean) => {
+  //     if (!done) {
+  //       // okay, we didn't find a nav that we can pop, so we should just exit the app
+  //       // since each platform exits differently, just delegate it to the platform to
+  //       // figure out how to exit
+  //       return this.exitApp.emit();
+  //     }
+  //     return Promise.resolve();
+  //   });
+  // }
 
   @Listen('document:paused')
   appResume(): void {
@@ -207,7 +210,7 @@ export function findTopNavs(nav: PublicNav): PublicNav[] {
   if (!childNavs || !childNavs.length) {
     containers.push(nav);
   } else {
-    childNavs.forEach(childNav => {
+    childNavs.forEach((childNav: any) => {
       const topNavs = findTopNavs(childNav);
       containers = containers.concat(topNavs);
     });
@@ -278,27 +281,27 @@ export function closeModalIfOpen(): Promise<boolean> {
   });
 }
 
-export function popEligibleView(): Promise<boolean> {
-  let navToPop: PublicNav = null;
-  let mostRecentVC: PublicViewController = null;
-  rootNavs.forEach(nav => {
-    const topNavs = getTopNavsImpl(nav.navId);
-    const poppableNavs = topNavs.map(topNav => getPoppableNav(topNav)).filter(nav => !!nav).filter(nav => !!nav.last());
-    poppableNavs.forEach(poppable => {
-      const topViewController = poppable.last();
-      if (!mostRecentVC || topViewController.timestamp >= mostRecentVC.timestamp) {
-        mostRecentVC = topViewController;
-        navToPop = poppable;
-      }
-    });
-  });
-  if (navToPop) {
-    return navToPop.pop().then(() => {
-      return true;
-    });
-  }
-  return Promise.resolve(false);
-}
+// export function popEligibleView(): Promise<boolean> {
+//   let navToPop: PublicNav = null;
+//   let mostRecentVC: PublicViewController = null;
+//   rootNavs.forEach(nav => {
+//     const topNavs = getTopNavsImpl(nav.navId);
+//     const poppableNavs = topNavs.map(topNav => getPoppableNav(topNav)).filter(nav => !!nav).filter(nav => !!nav.last());
+//     poppableNavs.forEach(poppable => {
+//       const topViewController = poppable.last();
+//       if (!mostRecentVC || topViewController.timestamp >= mostRecentVC.timestamp) {
+//         mostRecentVC = topViewController;
+//         navToPop = poppable;
+//       }
+//     });
+//   });
+//   if (navToPop) {
+//     return navToPop.pop().then(() => {
+//       return true;
+//     });
+//   }
+//   return Promise.resolve(false);
+// }
 
 export function getPoppableNav(nav: PublicNav): PublicNav {
   if (!nav) {

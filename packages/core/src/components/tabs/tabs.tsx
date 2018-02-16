@@ -1,7 +1,7 @@
 import { Component, Element, Event, EventEmitter, Listen, Method, Prop, State } from '@stencil/core';
-import { Config, NavEventDetail, NavOutlet } from '../../index';
+import { Config, NavOutlet } from '../../index';
 
-import { asyncRaf, ensureExternalRounterController } from '../../utils/helpers';
+import { asyncRaf } from '../../utils/helpers';
 
 
 @Component({
@@ -66,26 +66,27 @@ export class Tabs implements NavOutlet {
    * Emitted when the tab changes.
    */
   @Event() ionChange: EventEmitter;
-  @Event() ionNavChanged: EventEmitter<NavEventDetail>;
+  @Event() ionNavChanged: EventEmitter<any>;
 
   componentDidLoad() {
     this.loadConfig('tabsPlacement', 'bottom');
     this.loadConfig('tabsLayout', 'icon-top');
     this.loadConfig('tabsHighlight', true);
 
-    const promises: Promise<any>[] = [];
-    promises.push(this.initTabs());
-    promises.push(ensureExternalRounterController());
-    return Promise.all(promises).then(([_, externalRouterController]) => {
-      return (externalRouterController as HTMLIonExternalRouterControllerElement).getExternalNavOccuring();
-    }).then((externalNavOccuring) => {
-      if (!externalNavOccuring) {
-        return this.initSelect();
-      }
-      return null;
-    }).then(() => {
-      this.initialized = true;
-    });
+    this.initTabs().then(() => this.initSelect());
+    // const promises: Promise<any>[] = [];
+    // promises.push(this.initTabs());
+    // promises.push(ensureExternalRounterController());
+    // return Promise.all(promises).then(([_, externalRouterController]) => {
+    //   return (externalRouterController as HTMLIonExternalRouterControllerElement).getExternalNavOccuring();
+    // }).then((externalNavOccuring) => {
+    //   if (!externalNavOccuring) {
+    //     return this.initSelect();
+    //   }
+    //   return null;
+    // }).then(() => {
+    //   this.initialized = true;
+    // });
   }
 
   componentDidUnload() {

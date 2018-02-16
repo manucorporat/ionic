@@ -10,11 +10,14 @@ import {
   STATE_NEW,
   TransitionDoneFn,
   TransitionInstruction,
-  assert,
   convertToViews,
   isPresent,
   setZIndex
 } from './nav-util';
+
+// import { DomFrameworkDelegate } from '../../utils/dom-framework-delegate';
+// import { DomRouterDelegate } from '../../utils/dom-router-delegate';
+
 
 import { ViewController, isViewController } from './view-controller';
 // import { NavigationContainer } from './navigation-container';
@@ -25,16 +28,15 @@ import { ViewController, isViewController } from './view-controller';
 // import { TransitionController } from '../transitions/transition-controller';
 import { Component, Element, Event, EventEmitter, Method, Prop } from '@stencil/core';
 import { AnimationOptions, Config, DomController, FrameworkDelegate, GestureDetail, RouterDelegate } from '../..';
-import { isBlank, isNumber } from '../../utils/helpers';
+import { assert, isBlank, isNumber } from '../../utils/helpers';
 
 
 import { TransitionController } from './transition-controller';
 import { Transition } from './transition';
 
 
-import { buildIOSTransition } from './transitions/transition.ios';
-import { buildMdTransition } from './transitions/transition.md';
-
+import iosTransitionAnimation from './animations/ios.transition';
+// import mdTransitionAnimation from './animations/md.transition';
 
 const TrnsCtrl = new TransitionController();
 /**
@@ -42,11 +44,11 @@ const TrnsCtrl = new TransitionController();
  * This class is for internal use only. It is not exported publicly.
  */
 @Component({
-  tag: 'ion-nav2'
+  tag: 'ion-nav'
 })
 export class NavControllerBase {
 
-  _children: NavigationContainer[];
+  _children: NavControllerBase[];
   _ids = -1;
   _init = false;
   _isPortal: boolean;
@@ -55,7 +57,6 @@ export class NavControllerBase {
   _sbTrns: Transition;
   _trnsId: number = null;
   _trnsTm = false;
-  _viewport: ViewContainerRef;
   _views: ViewController[] = [];
   _zIndexOffset = 0;
   _destroyed: boolean;
@@ -166,7 +167,7 @@ export class NavControllerBase {
   }
 
   @Method()
-  remove(startIndex: number, removeCount = 1, opts?: NavOptions, done?: TransitionDoneFn): Promise<any> {
+  removeIndex(startIndex: number, removeCount = 1, opts?: NavOptions, done?: TransitionDoneFn): Promise<any> {
     return this._queueTrns({
       removeStart: startIndex,
       removeCount: removeCount,
@@ -318,14 +319,13 @@ export class NavControllerBase {
           throw new Error('no views in the stack to be removed');
         }
 
+        // Needs transition?
+        ti.requiresTransition = (ti.enteringRequiresTransition || ti.leavingRequiresTransition) && enteringView !== leavingView;
+
         if (enteringView && enteringView._state === STATE_NEW) {
           this._viewInit(enteringView);
         }
-
-        // Needs transition?
-        ti.requiresTransition = (ti.enteringRequiresTransition || ti.leavingRequiresTransition) && enteringView !== leavingView;
       })
-      .then(() => this._waitUntilReady(enteringView, leavingView))
       .then(() => this._postViewInit(enteringView, leavingView, ti))
       .then(() => this._transition(enteringView, leavingView, ti))
       .then((result) => this._success(result, ti))
@@ -336,11 +336,11 @@ export class NavControllerBase {
 
   _waitUntilReady(enteringView: ViewController, leavingView: ViewController) {
     const promises = [];
-    if (enteringView && enteringView.element.componentOnReady) {
-      promises.push(enteringView.element.componentOnReady());
+    if (enteringView && (enteringView.element as any).componentOnReady) {
+      promises.push((enteringView.element as any).componentOnReady());
     }
-    if (leavingView && leavingView.element.componentOnReady) {
-      promises.push(leavingView.element.componentOnReady());
+    if (leavingView && (leavingView.element as any).componentOnReady) {
+      promises.push((leavingView.element as any).componentOnReady());
     }
     return Promise.all(promises);
   }
@@ -540,31 +540,32 @@ export class NavControllerBase {
 
     // // create ComponentRef and set it to the entering view
     // enteringView.init(componentFactory.create(childInjector, []));
+    // enteringView.init()
+    enteringView.element = enteringView.component;
     enteringView._state = STATE_INITIALIZED;
     this._preLoad(enteringView);
   }
 
-  _viewAttachToDOM(view: ViewController, componentRef: ComponentRef<any>, viewport: ViewContainerRef) {
+  _viewAttachToDOM(view: ViewController, pageElement: HTMLElement) {
     assert(view._state === STATE_INITIALIZED, 'view state must be INITIALIZED');
-    assert(componentRef, 'componentRef can not be null');
+    assert(pageElement, 'componentRef can not be null');
 
     // fire willLoad before change detection runs
     this._willLoad(view);
 
     // render the component ref instance to the DOM
     // ******** DOM WRITE ****************
-    viewport.insert(componentRef.hostView, viewport.length);
+    debugger;
+    this.el.appendChild(pageElement);
     view._state = STATE_ATTACHED;
 
     if (view._cssClass) {
       // the ElementRef of the actual ion-page created
-      const pageElement = componentRef.location.nativeElement as HTMLElement;
-
       // ******** DOM WRITE ****************+
       pageElement.classList.add(view._cssClass);
     }
 
-    componentRef.changeDetectorRef.detectChanges();
+    // componentRef.changeDetectorRef.detectChanges();
 
     // successfully finished loading the entering view
     // fire off the "didLoad" lifecycle events
@@ -634,7 +635,53 @@ export class NavControllerBase {
       isRTL: false,
       // isRTL: this.config.plt.isRTL,
       ev: opts.ev,
+      enteringEl: enteringView ? enteringView.element : undefined,
+      leavingEl: leavingView ? enteringView.element : undefined
     };
+
+    const transition = new Transition(
+      this.animationCtrl,
+      iosTransitionAnimation,
+      enteringView,
+      leavingView,
+      animationOpts
+    );
+    TrnsCtrl.register(this._trnsId, transition);
+
+    // ensure any swipeback transitions are cleared out
+    this._sbTrns && this._sbTrns.destroy();
+    this._sbTrns = null;
+
+    // swipe to go back root transition
+    if (!transition.parent && opts.progressAnimation) {
+      this._sbTrns = transition;
+    }
+
+    // transition start has to be registered before attaching the view to the DOM!
+    const promise = new Promise<void>(resolve => transition.registerStart(resolve)).then(() => {
+      return this._transitionStart(transition, enteringView, leavingView, opts);
+    });
+
+    if (enteringView && (enteringView._state === STATE_INITIALIZED)) {
+      // render the entering component in the DOM
+      // this would also render new child navs/views
+      // which may have their very own async canEnter/Leave tests
+      // ******** DOM WRITE ****************
+      this._viewAttachToDOM(enteringView, enteringView.element);
+    }
+
+
+    // if (!transition.hasChildren) {
+      // lowest level transition, so kick it off and let it bubble up to start all of them
+      transition.start();
+    // }
+    return promise;
+  }
+
+  _transitionStart(transition: Transition, enteringView: ViewController, leavingView: ViewController, opts: NavOptions): Promise<NavResult> {
+    assert(this.isTransitioning(), 'isTransitioning() has to be true');
+
+    this._trnsId = null;
 
     // set the correct zIndex for the entering and leaving views
     // ******** DOM WRITE ****************
@@ -648,46 +695,8 @@ export class NavControllerBase {
     // ******** DOM WRITE ****************
     leavingView && leavingView._domShow(true);
 
-
-    // create the transition animation from the TransitionController
-    // this will either create the root transition, or add it as a child transition
-    return this.animationCtrl.create(iosEnterAnimation, animationOpts).then(animation => {
-      const transition = TrnsCtrl.get(this._trnsId, animation, enteringView, leavingView);
-
-      // ensure any swipeback transitions are cleared out
-      this._sbTrns && this._sbTrns.destroy();
-      this._sbTrns = null;
-
-      // swipe to go back root transition
-      if (transition.ani.isRoot() && opts.progressAnimation) {
-        this._sbTrns = transition;
-      }
-
-      // transition start has to be registered before attaching the view to the DOM!
-      const promise = new Promise<void>(resolve => transition.registerStart(resolve))
-        .then(() => this._transitionStart(transition, enteringView, leavingView, opts));
-
-      if (enteringView && (enteringView._state === STATE_INITIALIZED)) {
-        // render the entering component in the DOM
-        // this would also render new child navs/views
-        // which may have their very own async canEnter/Leave tests
-        // ******** DOM WRITE ****************
-        this._viewAttachToDOM(enteringView, enteringView._cmp, this._viewport);
-      }
-
-      if (!transition.ani.hasChildren) {
-        // lowest level transition, so kick it off and let it bubble up to start all of them
-        transition.start();
-      }
-      return promise;
-    });
-  }
-
-  _transitionStart(transition: Transition, enteringView: ViewController, leavingView: ViewController, opts: NavOptions): Promise<NavResult> {
-    assert(this.isTransitioning(), 'isTransitioning() has to be true');
-
-    this._trnsId = null;
-
+    // initialize the transition
+    transition.init();
 
     // we should animate (duration > 0) if the pushed page is not the first one (startup)
     // or if it is a portal (modal, actionsheet, etc.)
@@ -1173,19 +1182,6 @@ export class NavControllerBase {
         view.dismiss().catch();
       }
     }
-  }
-
-  setViewport(val: ViewContainerRef) {
-    this._viewport = val;
-  }
-
-  resize() {
-    const active = this.getActive();
-    if (!active) {
-      return;
-    }
-    const content = active.getIONContent();
-    content && content.resize();
   }
 
   goToRoot(_opts: NavOptions): Promise<any> {

@@ -1,6 +1,6 @@
-import { NavOptions, STATE_INITIALIZED, assert, STATE_NEW } from './nav-util';
-import { STATE_ATTACHED, STATE_DESTROYED } from '../nav/nav-utils';
+import { NavOptions, STATE_ATTACHED, STATE_DESTROYED, STATE_INITIALIZED, STATE_NEW } from './nav-util';
 import { NavControllerBase } from './nav';
+import { assert } from '../../utils/helpers';
 
 /**
  * @name ViewController
@@ -22,21 +22,14 @@ import { NavControllerBase } from './nav';
 export class ViewController {
 
   private _cntDir: any;
-  private _cntRef: ElementRef;
-  private _ionCntDir: Content;
-  private _ionCntRef: ElementRef;
-  private _hdrDir: Header;
-  private _ftrDir: Footer;
   private _isHidden = false;
   private _leavingOpts: NavOptions;
-  private _nb: Navbar;
   private _onDidDismiss: Function;
   private _onWillDismiss: Function;
   private _dismissData: any;
   private _dismissRole: any;
   private _detached: boolean;
 
-  _cmp: ComponentRef<any>;
   _nav: NavControllerBase;
   _zIndex: number;
   _state: number = STATE_NEW;
@@ -83,7 +76,7 @@ export class ViewController {
   // writeReady: EventEmitter<any> = new EventEmitter<any>();
 
   /** @hidden */
-  data: any;
+  // data: any;
 
   /** @hidden */
   instance: any;
@@ -94,12 +87,14 @@ export class ViewController {
   /** @hidden */
   isOverlay = false;
 
-  /** @hidden */
-  @Output() private _emitter: EventEmitter<any> = new EventEmitter();
+  element: HTMLElement;
 
-  constructor(public component?: any, data?: any, rootCssClass: string = DEFAULT_CSS_CLASS) {
+  /** @hidden */
+  // @Output() private _emitter: EventEmitter<any> = new EventEmitter();
+
+  constructor(public component?: any, public data?: any, rootCssClass: string = DEFAULT_CSS_CLASS) {
     // passed in data could be NavParams, but all we care about is its data object
-    this.data = (data instanceof NavParams ? data.data : (isPresent(data) ? data : {}));
+    // this.data = (data instanceof NavParams ? data.data : (isPresent(data) ? data : {}));
 
     this._cssClass = rootCssClass;
   }
@@ -107,13 +102,13 @@ export class ViewController {
   /**
    * @hidden
    */
-  init(componentRef: ComponentRef<any>) {
-    assert(componentRef, 'componentRef can not be null');
+  // init(componentRef: ComponentRef<any>) {
+  //   assert(componentRef, 'componentRef can not be null');
 
-    this._cmp = componentRef;
-    this.instance = this.instance || componentRef.instance;
-    this._detached = false;
-  }
+  //   this._cmp = componentRef;
+  //   this.instance = this.instance || componentRef.instance;
+  //   this._detached = false;
+  // }
 
   _setNav(navCtrl: NavControllerBase) {
     this._nav = navCtrl;
@@ -123,19 +118,19 @@ export class ViewController {
     this.instance = instance;
   }
 
-  /**
-   * @hidden
-   */
-  subscribe(generatorOrNext?: any): any {
-    return this._emitter.subscribe(generatorOrNext);
-  }
+  // /**
+  //  * @hidden
+  //  */
+  // subscribe(generatorOrNext?: any): any {
+  //   return this._emitter.subscribe(generatorOrNext);
+  // }
 
-  /**
-   * @hidden
-   */
-  emit(data?: any) {
-    this._emitter.emit(data);
-  }
+  // /**
+  //  * @hidden
+  //  */
+  // emit(data?: any) {
+  //   this._emitter.emit(data);
+  // }
 
   /**
    * Called when the current viewController has be successfully dismissed
@@ -190,12 +185,12 @@ export class ViewController {
     return this._nav && this._nav.config.get('pageTransition');
   }
 
-  /**
-   * @hidden
-   */
-  getNavParams(): NavParams {
-    return new NavParams(this.data);
-  }
+  // /**
+  //  * @hidden
+  //  */
+  // getNavParams(): NavParams {
+  //   return new NavParams(this.data);
+  // }
 
   /**
    * @hidden
@@ -223,7 +218,7 @@ export class ViewController {
    * @hidden
    */
   get name(): string {
-    return (this.component ? this.component.name : '');
+    return (this.element ? this.element.tagName : '');
   }
 
   /**
@@ -258,12 +253,11 @@ export class ViewController {
     // _hidden value of null means the hidden attribute will be removed
     // doing checks to make sure we only update the DOM when actually needed
     // if it should render, then the hidden attribute should not be on the element
-    if (this._cmp && shouldShow === this._isHidden) {
+    if (this.element && shouldShow === this._isHidden) {
       this._isHidden = !shouldShow;
       const value = (shouldShow ? null : '');
-      const el = this.pageRef().nativeElement as HTMLElement;
       // ******** DOM WRITE ****************
-      el.setAttribute('hidden', value);
+      this.element.setAttribute('hidden', value);
     }
   }
 
@@ -281,9 +275,9 @@ export class ViewController {
   _setZIndex(zIndex: number) {
     if (zIndex !== this._zIndex) {
       this._zIndex = zIndex;
-      const pageRef = this.pageRef();
-      if (pageRef) {
-        const el = pageRef.nativeElement as HTMLElement;
+      const pageEl = this.element;
+      if (pageEl) {
+        const el = pageEl as HTMLElement;
         // ******** DOM WRITE ****************
         el.style.zIndex = zIndex + '';
       }
@@ -291,120 +285,24 @@ export class ViewController {
   }
 
   /**
-   * @returns {ElementRef} Returns the Page's ElementRef.
-   */
-  pageRef(): ElementRef {
-    return this._cmp && this._cmp.location;
-  }
-
-  _setContent(directive: any) {
-    this._cntDir = directive;
-  }
-
-  /**
-   * @returns {component} Returns the Page's Content component reference.
-   */
-  getContent(): any {
-    return this._cntDir;
-  }
-
-  _setContentRef(elementRef: ElementRef) {
-    this._cntRef = elementRef;
-  }
-
-  /**
-   * @returns {ElementRef} Returns the Content's ElementRef.
-   */
-  contentRef(): ElementRef {
-    return this._cntRef;
-  }
-
-  _setIONContent(content: Content) {
-    this._setContent(content);
-    this._ionCntDir = content;
-  }
-
-  /**
-   * @hidden
-   */
-  getIONContent(): Content {
-    return this._ionCntDir;
-  }
-
-  _setIONContentRef(elementRef: ElementRef) {
-    this._setContentRef(elementRef);
-    this._ionCntRef = elementRef;
-  }
-
-  /**
-   * @hidden
-   */
-  getIONContentRef(): ElementRef {
-    return this._ionCntRef;
-  }
-
-  _setHeader(directive: Header) {
-    this._hdrDir = directive;
-  }
-
-  /**
-   * @hidden
-   */
-  getHeader(): Header {
-    return this._hdrDir;
-  }
-
-  _setFooter(directive: Footer) {
-    this._ftrDir = directive;
-  }
-
-  /**
-   * @hidden
-   */
-  getFooter(): Footer {
-    return this._ftrDir;
-  }
-
-  _setNavbar(directive: Navbar) {
-    this._nb = directive;
-  }
-
-  /**
-   * @hidden
-   */
-  getNavbar(): Navbar {
-    return this._nb;
-  }
-
-  /**
-   * Find out if the current component has a NavBar or not. Be sure
-   * to wrap this in an `ionViewWillEnter` method in order to make sure
-   * the view has rendered fully.
-   * @returns {boolean} Returns a boolean if this Page has a navbar or not.
-   */
-  hasNavbar(): boolean {
-    return !!this._nb;
-  }
-
-  /**
    * Change the title of the back-button. Be sure to call this
    * after `ionViewWillEnter` to make sure the  DOM has been rendered.
    * @param {string} backButtonText Set the back button text.
    */
-  setBackButtonText(val: string) {
-    this._nb && this._nb.setBackButtonText(val);
-  }
+  // setBackButtonText(val: string) {
+  //   this._nb && this._nb.setBackButtonText(val);
+  // }
 
   /**
    * Set if the back button for the current view is visible or not. Be sure to call this
    * after `ionViewWillEnter` to make sure the  DOM has been rendered.
    * @param {boolean} Set if this Page's back button should show or not.
    */
-  showBackButton(shouldShow: boolean) {
-    if (this._nb) {
-      this._nb.hideBackButton = !shouldShow;
-    }
-  }
+  // showBackButton(shouldShow: boolean) {
+  //   if (this._nb) {
+  //     this._nb.hideBackButton = !shouldShow;
+  //   }
+  // }
 
   _preLoad() {
     assert(this._state === STATE_INITIALIZED, 'view state must be INITIALIZED');
@@ -441,9 +339,10 @@ export class ViewController {
   _willEnter() {
     assert(this._state === STATE_ATTACHED, 'view state must be ATTACHED');
 
-    if (this._detached && this._cmp) {
+    if (this._detached) {
       // ensure this has been re-attached to the change detector
-      this._cmp.changeDetectorRef.reattach();
+      // TODO
+      // this._cmp.changeDetectorRef.reattach();
       this._detached = false;
     }
 
@@ -459,7 +358,7 @@ export class ViewController {
   _didEnter() {
     assert(this._state === STATE_ATTACHED, 'view state must be ATTACHED');
 
-    this._nb && this._nb.didEnter();
+    // this._nb && this._nb.didEnter();
     // this.didEnter.emit(null);
     this._lifecycle('DidEnter');
   }
@@ -489,8 +388,9 @@ export class ViewController {
 
     // when this is not the active page
     // we no longer need to detect changes
-    if (!this._detached && this._cmp) {
-      this._cmp.changeDetectorRef.detach();
+    if (!this._detached) {
+      // TODO
+      // this._cmp.changeDetectorRef.detach();
       this._detached = true;
     }
   }
@@ -515,18 +415,21 @@ export class ViewController {
   _destroy() {
     assert(this._state !== STATE_DESTROYED, 'view state must be ATTACHED');
 
-    if (this._cmp) {
+    if (this.element) {
       // ensure the element is cleaned up for when the view pool reuses this element
       // ******** DOM WRITE ****************
-      const cmpEle = this._cmp.location.nativeElement as HTMLElement;
+      // TODO
+      // const cmpEle = this._cmp.location.nativeElement as HTMLElement;
+      const cmpEle = this.element;
       cmpEle.setAttribute('class', null);
       cmpEle.setAttribute('style', null);
 
       // completely destroy this component. boom.
-      this._cmp.destroy();
+      // TODO
+      // this._cmp.destroy();
     }
 
-    this._nav = this._cmp = this.instance = this._cntDir = this._cntRef = this._leavingOpts = this._hdrDir = this._ftrDir = this._nb = this._onDidDismiss = this._onWillDismiss = null;
+    this._nav = this.instance = this._cntDir = this._leavingOpts = this._onDidDismiss = this._onWillDismiss = null;
     this._state = STATE_DESTROYED;
   }
 

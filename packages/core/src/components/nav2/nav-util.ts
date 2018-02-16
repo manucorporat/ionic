@@ -1,24 +1,28 @@
 import { ViewController, isViewController } from './view-controller';
 import { isArray } from '../../utils/helpers';
 import { NavControllerBase } from './nav';
+import { Transition } from './transition';
 
 
 export function getComponent(nameOrPageOrView: any, params?: any): Promise<ViewController> {
-  if (typeof nameOrPageOrView === 'function') {
-    return Promise.resolve(
-      new ViewController(nameOrPageOrView, params)
-    );
-  }
+  // if (typeof nameOrPageOrView === 'function') {
+  //   return Promise.resolve(
+  //     new ViewController(nameOrPageOrView, params)
+  //   );
+  // }
+  return Promise.resolve(
+    new ViewController(nameOrPageOrView, params)
+  );
 
-  if (typeof nameOrPageOrView === 'string') {
-    // return linker.getComponentFromName(nameOrPageOrView).then((component) => {
-    //   const vc = new ViewController(component, params);
-    //   vc.id = nameOrPageOrView;
-    //   return vc;
-    // });
-  }
+  // if (typeof nameOrPageOrView === 'string') {
+  //   // return linker.getComponentFromName(nameOrPageOrView).then((component) => {
+  //   //   const vc = new ViewController(component, params);
+  //   //   vc.id = nameOrPageOrView;
+  //   //   return vc;
+  //   // });
+  // }
 
-  return Promise.resolve(null);
+  // return Promise.resolve(null);
 }
 
 export function convertToView(nameOrPageOrView: any, params: any): Promise<ViewController> {
@@ -176,13 +180,6 @@ export interface NavOptions {
 }
 
 export function isPresent(val: any): val is any { return val !== undefined && val !== null; }
-
-export function assert(condition: any, reason: string) {
-  if (condition) {
-    // debugger;
-    throw new Error(reason);
-  }
-}
 
 export interface Page extends Function {
   new (...args: any[]): any;

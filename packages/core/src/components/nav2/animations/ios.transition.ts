@@ -1,5 +1,4 @@
-import { AnimationOptions, Transition, ViewController } from '../../../index';
-import { canNavGoBack } from '../nav-utils';
+import { Animation, AnimationOptions } from '../../../index';
 import { isDef } from '../../../utils/helpers';
 
 const DURATION = 500;
@@ -9,37 +8,37 @@ const TRANSFORM = 'transform';
 const TRANSLATEX = 'translateX';
 const CENTER = '0%';
 const OFF_OPACITY = 0.8;
-const SHOW_BACK_BTN_CSS = 'show-back-button';
+// const SHOW_BACK_BTN_CSS = 'show-back-button';
 
-export function buildIOSTransition(rootTransition: Transition, enteringView: ViewController, leavingView: ViewController, opts: AnimationOptions): Promise<Transition> {
+export default function iosTransitionAnimation(Animation: Animation, _: HTMLElement, opts: AnimationOptions): Promise<Animation> {
   // Cool we're all hydrated, and can do deep selector
-  rootTransition.enteringView = enteringView;
-  rootTransition.leavingView = leavingView;
-
   const isRTL = document.dir === 'rtl';
   const OFF_RIGHT = isRTL ? '-99.5%' : '99.5%';
   const OFF_LEFT = isRTL ? '33%' : '-33%';
 
+  const rootTransition = new Animation();
+
   rootTransition.duration(isDef(opts.duration) ? opts.duration : DURATION);
   rootTransition.easing(isDef(opts.easing) ? opts.easing : EASING);
 
+  const enteringEl = opts.enteringEl;
+  const leavingEl = opts.leavingEl;
 
-  rootTransition.addElement(enteringView.element);
+  rootTransition.addElement(enteringEl);
   rootTransition.beforeRemoveClass('hide-page');
 
   const backDirection = (opts.direction === 'back');
   // setting up enter view
-  if (enteringView) {
-    const navEl = leavingView.element.closest('ion-nav');
-    if (navEl) {
-      const navDecor = rootTransition.create();
-      navDecor.addElement(navEl).duringAddClass('show-decor');
-      rootTransition.add(navDecor);
-    }
-
-    const enteringContent = rootTransition.create();
-    enteringContent.addElement(enteringView.element.querySelector('ion-content'));
-    enteringContent.addElement(enteringView.element.querySelectorAll('ion-header > *:not(ion-toolbar),ion-footer > *'));
+  const navEl = (leavingEl || enteringEl).closest('ion-nav');
+  if (navEl) {
+    const navDecor = new Animation();
+    navDecor.addElement(navEl).duringAddClass('show-decor');
+    rootTransition.add(navDecor);
+  }
+  if (enteringEl) {
+    const enteringContent = new Animation();
+    enteringContent.addElement(enteringEl.querySelector('ion-content'));
+    enteringContent.addElement(enteringEl.querySelectorAll('ion-header > *:not(ion-toolbar),ion-footer > *'));
     rootTransition.add(enteringContent);
 
     if (backDirection) {
@@ -55,22 +54,22 @@ export function buildIOSTransition(rootTransition: Transition, enteringView: Vie
 
     }
 
-    const enteringToolBarEle = enteringView.element.querySelector('ion-toolbar');
+    const enteringToolBarEle = enteringEl.querySelector('ion-toolbar');
     if (enteringToolBarEle) {
-      const enteringToolBar = rootTransition.create();
+      const enteringToolBar = new Animation();
       enteringToolBar.addElement(enteringToolBarEle);
       rootTransition.add(enteringToolBar);
 
-      const enteringTitle = rootTransition.create();
+      const enteringTitle = new Animation();
       enteringTitle.addElement(enteringToolBarEle.querySelector('ion-title'));
 
-      const enteringToolBarItems = rootTransition.create();
+      const enteringToolBarItems = new Animation();
       enteringToolBarItems.addElement(enteringToolBarEle.querySelectorAll('ion-buttons,[menuToggle]'));
 
-      const enteringToolBarBg = rootTransition.create();
+      const enteringToolBarBg = new Animation();
       enteringToolBarBg.addElement(enteringToolBarEle.querySelector('.toolbar-background'));
 
-      const enteringBackButton = rootTransition.create();
+      const enteringBackButton = new Animation();
       enteringBackButton.addElement(enteringToolBarEle.querySelector('.back-button'));
 
       enteringToolBar
@@ -85,10 +84,6 @@ export function buildIOSTransition(rootTransition: Transition, enteringView: Vie
       if (backDirection) {
         enteringTitle.fromTo(TRANSLATEX, OFF_LEFT, CENTER, true);
 
-        if (canNavGoBack(enteringView.nav, enteringView)) {
-          // back direction, entering page has a back button
-          enteringBackButton.beforeAddClass(SHOW_BACK_BTN_CSS).fromTo(OPACITY, 0.01, 1, true);
-        }
       } else {
         // entering toolbar, forward direction
         enteringTitle.fromTo(TRANSLATEX, OFF_RIGHT, CENTER, true);
@@ -97,32 +92,32 @@ export function buildIOSTransition(rootTransition: Transition, enteringView: Vie
           .beforeClearStyles([OPACITY])
           .fromTo(TRANSLATEX, OFF_RIGHT, CENTER, true);
 
-        if (canNavGoBack(enteringView.nav, enteringView)) {
+        // if (canNavGoBack(enteringView.nav, enteringView)) {
 
-          // forward direction, entering page has a back button
-          enteringBackButton
-            .beforeAddClass(SHOW_BACK_BTN_CSS)
-            .fromTo(OPACITY, 0.01, 1, true);
+        //   // forward direction, entering page has a back button
+        //   enteringBackButton
+        //     .beforeAddClass(SHOW_BACK_BTN_CSS)
+        //     .fromTo(OPACITY, 0.01, 1, true);
 
 
-          const enteringBackBtnText = rootTransition.create();
-          enteringBackBtnText.addElement(enteringToolBarEle.querySelector('.back-button .button-text'));
+        //   const enteringBackBtnText = new Animation();
+        //   enteringBackBtnText.addElement(enteringToolBarEle.querySelector('.back-button .button-text'));
 
-          enteringBackBtnText.fromTo(TRANSLATEX, (isRTL ? '-100px' : '100px'), '0px');
-          enteringToolBar.add(enteringBackBtnText);
-        } else {
-          enteringBackButton.beforeRemoveClass(SHOW_BACK_BTN_CSS);
-        }
+        //   enteringBackBtnText.fromTo(TRANSLATEX, (isRTL ? '-100px' : '100px'), '0px');
+        //   enteringToolBar.add(enteringBackBtnText);
+        // } else {
+        //   enteringBackButton.beforeRemoveClass(SHOW_BACK_BTN_CSS);
+        // }
       }
     }
   }
 
   // setup leaving view
-  if (leavingView) {
+  if (leavingEl) {
 
-    const leavingContent = rootTransition.create();
-    leavingContent.addElement(leavingView.element.querySelector('ion-content'));
-    leavingContent.addElement(leavingView.element.querySelectorAll('ion-header > *:not(ion-toolbar),ion-footer > *'));
+    const leavingContent = new Animation();
+    leavingContent.addElement(leavingEl.querySelector('ion-content'));
+    leavingContent.addElement(leavingEl.querySelectorAll('ion-header > *:not(ion-toolbar),ion-footer > *'));
     rootTransition.add(leavingContent);
 
     if (backDirection) {
@@ -139,21 +134,21 @@ export function buildIOSTransition(rootTransition: Transition, enteringView: Vie
         .fromTo(OPACITY, 1, OFF_OPACITY, true);
     }
 
-    const leavingToolBarEle = leavingView.element.querySelector('ion-toolbar');
+    const leavingToolBarEle = leavingEl.querySelector('ion-toolbar');
     if (leavingToolBarEle) {
-      const leavingToolBar = rootTransition.create();
+      const leavingToolBar = new Animation();
       leavingToolBar.addElement(leavingToolBarEle);
 
-      const leavingTitle = rootTransition.create();
+      const leavingTitle = new Animation();
       leavingTitle.addElement(leavingToolBarEle.querySelector('ion-title'));
 
-      const leavingToolBarItems = rootTransition.create();
+      const leavingToolBarItems = new Animation();
       leavingToolBarItems.addElement(leavingToolBarEle.querySelectorAll('ion-buttons,[menuToggle]'));
 
-      const leavingToolBarBg = rootTransition.create();
+      const leavingToolBarBg = new Animation();
       leavingToolBarBg.addElement(leavingToolBarEle.querySelector('.toolbar-background'));
 
-      const leavingBackButton = rootTransition.create();
+      const leavingBackButton = new Animation();
       leavingBackButton.addElement(leavingToolBarEle.querySelector('.back-button'));
 
       leavingToolBar
@@ -179,7 +174,7 @@ export function buildIOSTransition(rootTransition: Transition, enteringView: Vie
           .beforeClearStyles([OPACITY])
           .fromTo(TRANSLATEX, CENTER, (isRTL ? '-100%' : '100%'));
 
-        const leavingBackBtnText = rootTransition.create();
+        const leavingBackBtnText = new Animation();
         leavingBackBtnText.addElement(leavingToolBarEle.querySelector('.back-button .button-text'));
         leavingBackBtnText.fromTo(TRANSLATEX, CENTER, (isRTL ? -300 : 300) + 'px');
         leavingToolBar.add(leavingBackBtnText);

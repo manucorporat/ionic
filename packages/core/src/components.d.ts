@@ -14,7 +14,6 @@ import {
   FrameworkDelegate,
   PickerColumn,
   PickerOptions,
-  RouterDelegate,
 } from './index';
 import {
   AlertButton,
@@ -29,6 +28,10 @@ import {
   GestureDetail,
 } from './components/gesture/gesture';
 import {
+  FrameworkDelegate as FrameworkDelegate2,
+  RouterDelegate,
+} from '.';
+import {
   PickerButton,
   PickerColumn as PickerColumn2,
 } from './components/picker/picker';
@@ -41,9 +44,6 @@ import {
 import {
   SelectPopoverOption,
 } from './components/select-popover/select-popover';
-import {
-  FrameworkDelegate as FrameworkDelegate2,
-} from '.';
 import {
   DomRenderFn,
   HeaderFn,
@@ -868,36 +868,6 @@ declare global {
   }
   namespace JSXElements {
     export interface IonEventsAttributes extends HTMLAttributes {
-      
-    }
-  }
-}
-
-
-import {
-  ExternalRouterController as IonExternalRouterController
-} from './components/external-router-controller/external-router-controller';
-
-declare global {
-  interface HTMLIonExternalRouterControllerElement extends IonExternalRouterController, HTMLStencilElement {
-  }
-  var HTMLIonExternalRouterControllerElement: {
-    prototype: HTMLIonExternalRouterControllerElement;
-    new (): HTMLIonExternalRouterControllerElement;
-  };
-  interface HTMLElementTagNameMap {
-    "ion-external-router-controller": HTMLIonExternalRouterControllerElement;
-  }
-  interface ElementTagNameMap {
-    "ion-external-router-controller": HTMLIonExternalRouterControllerElement;
-  }
-  namespace JSX {
-    interface IntrinsicElements {
-      "ion-external-router-controller": JSXElements.IonExternalRouterControllerAttributes;
-    }
-  }
-  namespace JSXElements {
-    export interface IonExternalRouterControllerAttributes extends HTMLAttributes {
       
     }
   }
@@ -1874,8 +1844,8 @@ declare global {
 
 
 import {
-  Nav as IonNav
-} from './components/nav/nav';
+  NavControllerBase as IonNav
+} from './components/nav2/nav';
 
 declare global {
   interface HTMLIonNavElement extends IonNav, HTMLStencilElement {
@@ -1899,7 +1869,6 @@ declare global {
     export interface IonNavAttributes extends HTMLAttributes {
       delegate?: FrameworkDelegate;
       lazy?: boolean;
-      mode?: string;
       root?: any;
       routerDelegate?: RouterDelegate;
       swipeBackEnabled?: boolean;

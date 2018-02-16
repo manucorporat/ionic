@@ -17,11 +17,6 @@
 boolean
 
 
-#### mode
-
-string
-
-
 #### root
 
 any
@@ -54,11 +49,6 @@ boolean
 boolean
 
 
-#### mode
-
-string
-
-
 #### root
 
 any
@@ -81,40 +71,25 @@ boolean
 
 ## Events
 
-#### ionNavChanged
+#### viewDidEnter
 
 
-#### navInit
+#### viewDidLeave
+
+
+#### viewDidLoad
+
+
+#### viewWillEnter
+
+
+#### viewWillLeave
+
+
+#### viewWillUnload
 
 
 ## Methods
-
-#### canGoBack()
-
-
-#### first()
-
-
-#### getActive()
-
-
-#### getChildNavs()
-
-
-#### getContentElement()
-
-
-#### getId()
-
-
-#### getPrevious()
-
-
-#### getRouteId()
-
-
-#### getViews()
-
 
 #### insert()
 
@@ -122,16 +97,10 @@ boolean
 #### insertPages()
 
 
-#### isTransitioning()
-
-
-#### last()
-
-
-#### onAllTransitionsComplete()
-
-
 #### pop()
+
+
+#### popAll()
 
 
 #### popTo()
@@ -152,13 +121,7 @@ boolean
 #### setPages()
 
 
-#### setParent()
-
-
 #### setRoot()
-
-
-#### setRouteId()
 
 
 
