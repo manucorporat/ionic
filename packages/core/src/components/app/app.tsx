@@ -61,6 +61,22 @@ export class App {
     return true;
   }
 
+  @Method()
+  setEnabled(_isEnabled: boolean, _time?: number, _t2?: number) {
+    return;
+  }
+
+  @Method()
+  unregisterRootNav(_: any) {
+    return;
+  }
+
+
+  // @Method()
+  // registerRootNav(_: any) {
+  //   return;
+  // }
+
   /**
    * Boolean if the app is actively scrolling or not.
    * @return {boolean} returns true or false

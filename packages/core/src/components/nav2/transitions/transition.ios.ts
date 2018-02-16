@@ -27,18 +27,15 @@ export function buildIOSTransition(rootTransition: Transition, enteringView: Vie
   rootTransition.addElement(enteringView.element);
   rootTransition.beforeRemoveClass('hide-page');
 
-  if (leavingView) {
+  const backDirection = (opts.direction === 'back');
+  // setting up enter view
+  if (enteringView) {
     const navEl = leavingView.element.closest('ion-nav');
     if (navEl) {
       const navDecor = rootTransition.create();
       navDecor.addElement(navEl).duringAddClass('show-decor');
       rootTransition.add(navDecor);
     }
-  }
-
-  const backDirection = (opts.direction === 'back');
-  // setting up enter view
-  if (enteringView) {
 
     const enteringContent = rootTransition.create();
     enteringContent.addElement(enteringView.element.querySelector('ion-content'));
